@@ -76,7 +76,8 @@ fun CollapsingEffectScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            Modifier.fillMaxWidth()
+
+            Modifier.fillMaxWidth().height(13.dp)
             Image(
                 painter = painterResource(id = R.drawable.product_img_template),
                 alignment = Alignment.Center,
@@ -85,7 +86,7 @@ fun CollapsingEffectScreen() {
                 modifier = Modifier
                     .graphicsLayer {
                         scrolledY += lazyListState.firstVisibleItemScrollOffset - previousOffset
-                        translationY = (scrolledY*0.9f - scrolledY)/2
+                        translationY = scrolledY*0.9f - scrolledY
                         scaleX = 1/((scrolledY * 0.002f) + 1f)
                         scaleY = 1/((scrolledY * 0.002f) + 1f)
                         previousOffset = lazyListState.firstVisibleItemScrollOffset
