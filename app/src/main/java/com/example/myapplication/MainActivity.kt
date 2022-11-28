@@ -118,7 +118,7 @@ fun nestedScroll() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_background),
+                        painter = painterResource(id = R.drawable.product_img_template),
                         contentDescription = "",
                         modifier = Modifier.fillMaxSize()
                     )
