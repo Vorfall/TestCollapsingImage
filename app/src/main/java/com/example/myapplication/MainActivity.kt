@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
@@ -53,11 +54,16 @@ fun nestedScroll() {
         modifier = Modifier.fillMaxSize(),
         color = Color.Gray
     ) {
-        val maxHeight = 200f
-        val minHeight = 60f
+
+//        var textText by remember { mutableStateOf("") }
+
+        var maxHeight = 328.dp
+        val minHeight = 0f
+        var heightImage by remember { mutableStateOf(maxHeight) }
+
         val d = LocalDensity.current.density
         val toolbarHeightPx = with(LocalDensity.current) {
-            maxHeight.dp.roundToPx().toFloat()
+            maxHeight.roundToPx().toFloat()
         }
         val toolbarMinHeightPx = with(LocalDensity.current) {
             minHeight.dp.roundToPx().toFloat()
@@ -74,89 +80,49 @@ fun nestedScroll() {
                 }
             }
         }
-        var progress by remember { mutableStateOf(0f) }
-        LaunchedEffect(key1 = toolbarOffsetHeightPx.value) {
-            progress =
-                ((toolbarHeightPx + toolbarOffsetHeightPx.value) / toolbarHeightPx - minHeight / maxHeight) / (1f - minHeight / maxHeight)
-        }
+
+
         Box(
             Modifier
                 .fillMaxSize()
                 .nestedScroll(nestedScrollConnection)
         ) {
-            LazyColumn(contentPadding = PaddingValues(top = maxHeight.dp)) {
-                items(100) { index ->
-                    Text(
-                        "I'm item $index", modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    )
+            LazyColumn(
+                contentPadding = PaddingValues(top = heightImage),
+                modifier = Modifier
+                    .background(Color.Gray)
+                    .fillMaxSize()
+            )
+            {
+                item() {
+                    repeat(120) {
+                        Text(
+                            "textText", modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                    }
                 }
             }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(((toolbarHeightPx + toolbarOffsetHeightPx.value) / d).dp)
-                    .background(
-                        Color.Red
-                    )
+                    .height(maxHeight+ toolbarOffsetHeightPx.value.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
+                heightImage = ((toolbarHeightPx + toolbarOffsetHeightPx.value) / d).dp
+
+                Log.e("heightImage", "toolbarHeightPx: " + toolbarHeightPx )
+                Log.d("heightImage", "toolbarOffsetHeightPx.value: "+ toolbarOffsetHeightPx.value)
+                Log.i("heightImage", "heightImage: "+ heightImage.value.toString())
+              //  textText = heightImage.value.toString()
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier.width(24.dp))
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(progress + 0.001f)
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher_background),
+                        contentDescription = "",
+                        modifier = Modifier.fillMaxSize()
                     )
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .weight(1f)
-                                .padding(vertical = 10.dp)
-                                .aspectRatio(1f)
-                                .clip(CircleShape)
-                                .background(Color.White)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_launcher_background),
-                                contentDescription = "",
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                        Text(
-                            "Hello World",
-                            color = Color.White,
-                            modifier = Modifier
-                                .alpha(progress)
-                                .padding((8 * (progress * progress * progress)).dp),
-                            fontSize = (24 * (progress)).sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    Text(
-                        "Hello World",
-                        color = Color.White,
-                        modifier = Modifier
-                            .alpha(1f - progress)
-                            .weight(1.001f - progress)
-                            .padding(start = 20.dp),
-                        fontSize = (24 * (1f - progress)).sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(24.dp))
+
                 }
             }
         }
