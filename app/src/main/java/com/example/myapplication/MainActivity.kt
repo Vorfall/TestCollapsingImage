@@ -27,9 +27,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,52 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun nestedScroll2(){
+    val toolbarHeight = 48.dp
+    val toolbarHeightPx = with(LocalDensity.current) { toolbarHeight.roundToPx().toFloat() }
+    val toolbarOffsetHeightPx = remember { mutableStateOf(0f) }
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+
+                val delta = available.y
+                val newOffset = toolbarOffsetHeightPx.value + delta
+                toolbarOffsetHeightPx.value = newOffset.coerceIn(-toolbarHeightPx, 0f)
+                return Offset.Zero
+            }
+        }
+    }
+    Box(
+        Modifier
+            .fillMaxSize()
+            .nestedScroll(nestedScrollConnection)
+    ) {
+
+        LazyColumn(contentPadding = PaddingValues(top = toolbarHeight)) {
+            item() {
+                repeat(5) {
+                    Text(
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                        text = "product.product.description",
+                    )
+                }
+            }
+        }
+
+        Image(
+            painter = painterResource(id = R.drawable.product_img_template),
+            contentDescription = "",
+            modifier = Modifier
+
+                .height(toolbarHeight)
+                .offset { IntOffset(x = 0, y = toolbarOffsetHeightPx.value.roundToInt()) },
+        )
+
+
+    }
+}
 @Composable
 fun nestedScroll() {
     Surface(
@@ -95,10 +143,10 @@ fun nestedScroll() {
             )
             {
                 item() {
-                    repeat(120) {
+                    repeat(5) {
                         Text(
-                            "textText", modifier = Modifier
-                                .fillMaxWidth()
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                            text = "product.product.description",
                         )
                     }
                 }
